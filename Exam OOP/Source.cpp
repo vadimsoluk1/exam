@@ -4,6 +4,7 @@
 #include <iomanip>
 #include <fstream>
 #include <string>
+#include <vector>
 using namespace std;
 
 void line() {
@@ -159,16 +160,191 @@ public:
 };
 
 
+class questions {
+    string question;
+    vector <string> answers;
+    int true_answer;
+   
+public:
+
+    questions() {
+        true_answer = 0;
+    }
+
+    questions(const string& question , const vector<string>& answers ,const int& true_answer ) {
+        this->question = question;
+        for (int i = 0; i < answers.size();i++) {
+            this->answers.push_back(answers[i]);
+        }
+        this->true_answer = true_answer;
+    }
+
+    
+    questions read_file_q(ifstream& fin) {
+
+        char c;
+        int size;
+        string answer;
+
+        while (fin.get(c)) {
+            if (c == ':') {
+                break;
+            }
+            question += c;
+        }
+        fin >> size;
+
+        for (int i = 0; i < size; i++) {
+            while (fin.get(c)) {
+                if (c == ':') {
+                    break;
+                }
+                answer += c;
+            }
+            answers.push_back(answer);
+        }
+        
+        fin >> true_answer;
+
+        questions q(question , answers , true_answer);
+        return q;
+
+    }
+
+
+};
+
+
+class test : public questions {
+    string title;
+    vector <questions> q;
+public:
+
+    test() {}
+
+    test(const string& title , const vector <questions>& q) {
+
+        this->title = title;
+        for (int i = 0; i < q.size(); i++) {
+            this->q.push_back(q[i]);
+        }
+
+    }
+
+    test read_file_t(ifstream& fin) {
+        
+        char c;
+        int size;
+
+        while (fin.get(c)) {
+            if (c == ':') {
+                break;
+            }
+            title += c;
+        }
+        fin >> size;
+
+        for (int i = 0; i < size; i++) {
+            q.push_back(read_file_q(fin));
+        }
+        
+        
+        test t(title , q);
+        
+        return t;
+    }
+
+    
+
+};
+
+
+class section : public test {
+    string title;
+    vector <test> t;
+public:
+
+    section() {}
+
+    section(const string& title , const vector<test>& t ) {
+        this->title = title;
+        for (int i = 0; i < t.size(); i++) {
+            this->t.push_back(t[i]);
+        }
+    }
+
+    section read_file_s(ifstream& fin) {
+        
+        char c;
+        int size;
+
+        while (fin.get(c) ) {
+            if (c == ':') {
+                break;
+            }
+
+            title += c;
+        }
+        fin >> size;
+         
+        for (int i = 0; i < size; i++) {
+            t.push_back(read_file_t(fin));
+        }
+
+        section s(title , t);
+
+        return s;
+
+    }
+
+    
+
+};
+
+
+class all_sections : public section {
+    vector <section> sections ;
+    string path;
+public:
+
+    all_sections(){
+        path = "sections.txt";
+    }
+
+    void read_file_a() {
+
+        ifstream fin;
+       
+        fin.open(path);
+
+        if (!fin.is_open()) {
+            cout << "error";
+        }
+        else {
+            while (!fin.eof()) {
+                sections.push_back(read_file_s(fin));
+            }
+           
+        }
+        fin.close();
+
+    }
+
+    
+};
+
 
 
 
 int main() {
     setlocale(LC_ALL, "UKR");
 
-    user u;
-
-    u.user_login();
     
+    all_sections A;
+
+    A.read_file_a();
+
+   
     
 
     return 0;
