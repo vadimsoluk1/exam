@@ -179,12 +179,20 @@ public:
         this->true_answer = true_answer;
     }
 
+    void choice_answer() {
+
+
+    }
+
     
     questions read_file_q(ifstream& fin) {
 
         char c;
         int size;
         string answer;
+        question.clear();
+        answers.clear();
+        true_answer = 0;
 
         while (fin.get(c)) {
             if (c == ':') {
@@ -202,6 +210,7 @@ public:
                 answer += c;
             }
             answers.push_back(answer);
+            answer.clear();
         }
         
         fin >> true_answer;
@@ -209,6 +218,11 @@ public:
         questions q(question , answers , true_answer);
         return q;
 
+    }
+
+    void print_q() {
+
+       
     }
 
 
@@ -235,6 +249,8 @@ public:
         
         char c;
         int size;
+        title.clear();
+        q.clear();
 
         while (fin.get(c)) {
             if (c == ':') {
@@ -254,7 +270,9 @@ public:
         return t;
     }
 
-    
+    void print_t() {
+        
+    }
 
 };
 
@@ -277,6 +295,8 @@ public:
         
         char c;
         int size;
+        title.clear();
+        t.clear();
 
         while (fin.get(c) ) {
             if (c == ':') {
@@ -292,11 +312,14 @@ public:
         }
 
         section s(title , t);
-
+        
         return s;
 
     }
 
+    void print_s() {
+        
+    }
     
 
 };
@@ -313,6 +336,8 @@ public:
 
     void read_file_a() {
 
+       
+
         ifstream fin;
        
         fin.open(path);
@@ -320,7 +345,7 @@ public:
         if (!fin.is_open()) {
             cout << "error";
         }
-        else {
+        else {  
             while (!fin.eof()) {
                 sections.push_back(read_file_s(fin));
             }
@@ -330,6 +355,11 @@ public:
 
     }
 
+    void print(){
+       
+        
+    
+    }
     
 };
 
@@ -341,8 +371,10 @@ int main() {
 
     
     all_sections A;
-
     A.read_file_a();
+    A.print();
+   
+    
 
    
     
