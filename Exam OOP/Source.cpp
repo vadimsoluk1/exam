@@ -5,6 +5,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <math.h> 
 using namespace std;
 
 void line() {
@@ -17,7 +18,7 @@ class system {
 
 public:
 
-    bool if_is_user(string& name , string& path) {
+    bool if_is_user(string& name, string& path) {
         ifstream fin;
         string user_n;
 
@@ -27,7 +28,7 @@ public:
             cout << "ERORE!!!";
         }
         else {
-           
+
             while (!fin.eof()) {
                 fin >> user_n;
                 if (user_n == name) {
@@ -40,7 +41,7 @@ public:
         return true;
     }
 
-    bool if_is_password(string& name , string& password, string& path) {
+    bool if_is_password(string& name, string& password, string& path) {
         ifstream fin;
         string user_n;
         string password_c;
@@ -58,7 +59,7 @@ public:
             while (!fin.eof()) {
                 fin >> user_n;
                 fin >> password_c;
-                if (user_n == name && password_c == password ) {
+                if (user_n == name && password_c == password) {
                     return false;
                 }
             }
@@ -85,6 +86,7 @@ public:
 
         line();
         do {
+            cout << "\nREGISTER USER";
             cout << "\n" << "Enter username : ";
             cin >> name;
             cout << "Enter password : ";
@@ -124,6 +126,7 @@ public:
        
         do {
             line();
+            cout << "\nLOGIN USER";
             cout << "\n" << "Enter username : ";
             cin >> name;
             cout << "Enter password : ";
@@ -132,7 +135,7 @@ public:
             cout << "\n";
             if (!if_is_user(name, path)) {
                 if (if_is_password(name, password, path)) {
-                    cout << "Введiть правльний пароль!!!\n";
+                    cout << "Введiть правильний пароль!!!\n";
                 }
                 else {
                     is = false;
@@ -146,6 +149,7 @@ public:
                 cin >> ac;
                 if (ac == true) {
                     register_user();
+                    is = false;
                 }
 
             }
@@ -156,35 +160,150 @@ public:
          
     }
 
+    string return_name() {
+        return name;
+    }
     
 };
 
+class user_m {
+    user u;
+    vector<int> mark_s;
+    vector<string> test_name;
+    string path;
+public:
+    user_m() {
+        path = "marks.txt";
+    }
+
+    void reg_us() {
+        u.register_user();
+    }
+
+    void login_us() {
+        u.user_login();
+    }
+
+    void add_mark(int mark, string t_n) {
+
+        print_mark_after_test(mark);
+
+        mark_s.push_back(mark);
+        test_name.push_back(t_n);
+
+        write_mark();
+
+    }
+
+    void print_mark_after_test(int& mark) {
+
+        int procent = 100 / 6;
+        procent *= mark;
+
+        cout << "Процент правильних вiдповiдей : " << procent << "\n";
+
+        cout << "Кiлькiсть правильних вiдповiдей : " << mark << "\n";
+
+        mark *= (12 / 6);
+
+        cout << "Бали : " << mark;
+
+      
+    }
+
+    void write_mark() {
+
+        ofstream fout;
+
+        fout.open(path, ofstream::app);
+
+        if (!fout.is_open()) {
+            cout << "error";
+        }
+        {
+
+            fout << u.return_name();
+            for (int i = 0; i < test_name.size(); i++) {
+                fout << " " << test_name[i] << ": " << mark_s[i];
+            }
+
+
+        }
+        fout.close();
+
+    }
+
+    void read_mark() {
+        ifstream fin;
+
+        fin.open(path);
+        string word;
+        char c;
+        int num;
+
+        if (!fin.is_open()) {
+            cout << "error";
+        }
+        else {
+            while (!fin.eof()) {
+                fin >> word;
+                if (word == u.return_name()) {
+                    word.clear();
+                    while (fin.get(c)) {
+                        if (c == ':') {
+                            break;
+                        }
+                        word += c;
+                    }
+                    test_name.push_back(word);
+                    fin >> num;
+                    mark_s.push_back(num);
+
+                }
+                else {
+                    while (fin.get(c)) {
+                        if (c == ':') {
+                            break;
+                        }
+                        word += c;
+                    }
+                    fin >> num;
+                }
+                word.clear();
+
+            }
+        }
+    }
+
+    void print() {
+        for (int i = 0; i < mark_s.size(); i++) {
+            cout << "\nНазва тесту : " << test_name[i] ;
+            cout << "\nБал за тест : " << mark_s[i] ;
+        }
+    }
+
+};
 
 class questions {
     string question;
     vector <string> answers;
     int true_answer;
-   
+
 public:
 
     questions() {
         true_answer = 0;
     }
 
-    questions(const string& question , const vector<string>& answers ,const int& true_answer ) {
+    questions(const string& question, const vector<string>& answers, const int& true_answer) {
         this->question = question;
-        for (int i = 0; i < answers.size();i++) {
+        for (int i = 0; i < answers.size(); i++) {
             this->answers.push_back(answers[i]);
         }
         this->true_answer = true_answer;
     }
 
-    void choice_answer() {
 
-
-    }
-
-    
     questions read_file_q(ifstream& fin) {
 
         char c;
@@ -212,24 +331,41 @@ public:
             answers.push_back(answer);
             answer.clear();
         }
-        
+
         fin >> true_answer;
 
-        questions q(question , answers , true_answer);
+        questions q(question, answers, true_answer);
         return q;
 
     }
 
     void print_q() {
 
-       
+        cout << question;
+        for (int i = 0; i < answers.size(); i++) {
+            cout << "\n" << answers[i];
+        }
+
     }
+
+    int choise_q() {
+        int choise;
+        cout << "\nЗробiть свiй вибiр : ";
+        cin >> choise;
+
+        if (choise == true_answer) {
+            return 1;
+        }
+        else {
+            return 0;
+        }
+    }
+
 
 
 };
 
-
-class test : public questions {
+class test : public questions , user_m {
     string title;
     vector <questions> q;
 public:
@@ -271,11 +407,21 @@ public:
     }
 
     void print_t() {
-        
+        int mark = 0;
+        for (int i = 0; i < q.size(); i++) {
+            q[i].print_q();
+            mark += q[i].choise_q();
+        }
+
+        add_mark(mark , title);
+
+    }
+    
+    void print_title(int i) {
+        cout << title << " - " << i+1;
     }
 
 };
-
 
 class section : public test {
     string title;
@@ -317,13 +463,23 @@ public:
 
     }
 
-    void print_s() {
-        
+    void print_s(int i ) {
+        cout << title << " - " << i + 1;
+    }
+
+    void choice_s() {
+        for (int i = 0; i < t.size(); i++) {
+            t[i].print_title(i);
+        }
+        int i;
+        cout << "\nЗробiть свiй вибiр : ";
+        cin >> i;
+        i--;
+        t[i].print_t();
     }
     
 
 };
-
 
 class all_sections : public section {
     vector <section> sections ;
@@ -355,10 +511,24 @@ public:
 
     }
 
-    void print(){
-       
-        
     
+
+    void print(){
+        
+        for (int i = 0; i < sections.size(); i++) {
+            sections[i].print_s(i);
+        }
+        
+    }
+
+    void choise() {
+
+        int i;
+        cout << "\nЗробiть свiй вибiр : ";
+        cin >> i;
+        i--;
+        sections[i].choice_s();
+
     }
     
 };
@@ -366,18 +536,17 @@ public:
 
 
 
+
+
 int main() {
     setlocale(LC_ALL, "UKR");
 
-    
-    all_sections A;
-    A.read_file_a();
-    A.print();
-   
-    
+    all_sections a_s;
+    user_m u_m;
+
 
    
-    
-
+   
+   
     return 0;
 }
