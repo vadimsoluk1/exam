@@ -14,7 +14,7 @@ void line() {
     }
 }
 
-class system {
+class system1 {
 
 public:
 
@@ -70,7 +70,7 @@ public:
     }
 };
 
-class user : public system {
+class user : public system1 {
     string name;
     string password;
     string path;
@@ -93,14 +93,17 @@ public:
             (cin >> password).get();
             line();
             cout << "\n";
+            system("cls");
             if (if_is_user(name, path)) {
                 is = false;
             }
             else {
                 cout << "Такий користувач вже iснує!!!\nВведiть iнше iмя";
             }
-            
+            cout << "\n";
+            line();
         } while(is);
+        system("cls");
 
         fout.open(path, ofstream::app);
 
@@ -131,8 +134,7 @@ public:
             cin >> name;
             cout << "Enter password : ";
             (cin >> password).get();
-            line();
-            cout << "\n";
+            system("cls");
             if (!if_is_user(name, path)) {
                 if (if_is_password(name, password, path)) {
                     cout << "Введiть правильний пароль!!!\n";
@@ -147,6 +149,7 @@ public:
                 cout << "1 - ТАК\n";
                 cout << "Зробiть свiй вибiр : ";
                 cin >> ac;
+                system("cls");
                 if (ac == true) {
                     register_user();
                     is = false;
@@ -200,15 +203,33 @@ public:
         int procent = 100 / 6;
         procent *= mark;
 
-        cout << "Процент правильних вiдповiдей : " << procent << "\n";
+        line();
+
+        cout << "\nПроцент правильних вiдповiдей : " << procent << "%\n";
 
         cout << "Кiлькiсть правильних вiдповiдей : " << mark << "\n";
 
         mark *= (12 / 6);
 
-        cout << "Бали : " << mark;
+        cout << "Бали : " << mark << "\n";
 
       
+    }
+
+    void write_user_name() {
+
+        ofstream fout;
+
+        fout.open(path, ofstream::app);
+
+        if (!fout.is_open()) {
+            cout << "error";
+        }
+        {
+            fout << u.return_name();
+        }
+        fout.close();
+
     }
 
     void write_mark() {
@@ -222,9 +243,9 @@ public:
         }
         {
 
-            fout << u.return_name();
+           
             for (int i = 0; i < test_name.size(); i++) {
-                fout << " " << test_name[i] << ": " << mark_s[i];
+                fout << " " << test_name[i] << ": " << mark_s[i] << "\n";
             }
 
 
@@ -273,12 +294,15 @@ public:
 
             }
         }
+
+        print();
     }
 
     void print() {
+        line();
         for (int i = 0; i < mark_s.size(); i++) {
-            cout << "\nНазва тесту : " << test_name[i] ;
-            cout << "\nБал за тест : " << mark_s[i] ;
+            cout << "\nНазва тесту :" << test_name[i] ;
+            cout << "\nБал за тест : " << mark_s[i] << "\n";
         }
     }
 
@@ -341,9 +365,9 @@ public:
 
     void print_q() {
 
-        cout << question;
+        cout << question << " :";
         for (int i = 0; i < answers.size(); i++) {
-            cout << "\n" << answers[i];
+            cout << "\n" << answers[i] << " - " << i + 1;
         }
 
     }
@@ -352,6 +376,7 @@ public:
         int choise;
         cout << "\nЗробiть свiй вибiр : ";
         cin >> choise;
+        system("cls");
 
         if (choise == true_answer) {
             return 1;
@@ -409,6 +434,9 @@ public:
     void print_t() {
         int mark = 0;
         for (int i = 0; i < q.size(); i++) {
+            system("cls");
+            line();
+            cout << "\n" << i + 1 << ") ";
             q[i].print_q();
             mark += q[i].choise_q();
         }
@@ -418,7 +446,8 @@ public:
     }
     
     void print_title(int i) {
-        cout << title << " - " << i+1;
+        
+        cout << title << " - " << i + 1;
     }
 
 };
@@ -468,6 +497,7 @@ public:
     }
 
     void choice_s() {
+        line();
         for (int i = 0; i < t.size(); i++) {
             t[i].print_title(i);
         }
@@ -475,6 +505,7 @@ public:
         cout << "\nЗробiть свiй вибiр : ";
         cin >> i;
         i--;
+        system("cls");
         t[i].print_t();
     }
     
@@ -515,9 +546,12 @@ public:
 
     void print(){
         
+        line();
+        cout << "\n";
         for (int i = 0; i < sections.size(); i++) {
             sections[i].print_s(i);
         }
+        choise();
         
     }
 
@@ -527,26 +561,95 @@ public:
         cout << "\nЗробiть свiй вибiр : ";
         cin >> i;
         i--;
+        system("cls");
         sections[i].choice_s();
+      
 
     }
     
 };
 
+void reg_and_log(user_m& u_m) {
+    int choise;
+    
+    while (true) {
+        line();
+        cout << "\nЗареєструватись - 0\n";
+        cout << "Залогiнитись - 1\n";
+        cout << "Зробiть свiй вибiр : ";
+        cin >> choise;
 
+        if (choise < 0 || choise > 1) {
+            cout << "\nВи ввели не iснуючу вiдповiдь\n";
+        }
+        else {
+            break;
+        }
+    }
+    system("cls");
+    if (choise == 0) {
+        u_m.reg_us();
+    }
+    else {
+        u_m.login_us();
+    }
 
+}
 
+int menu1() {
+    int menu;
+    line();
+    while (true) {
+        cout << "\n1 - Подивитись результати своїх тестiв\n";
+        cout << "2 - Здати новий тест\n";
+        cout << "Зробiть свiй вибiр : ";
+        cin >> menu;
 
+        if (menu < 1 || menu > 2) {
+            cout << "\nВи ввели не iснуючу вiдповiдь\n";
+        }
+        else {
+            break;
+        }
+        system("cls");
+    }
+
+    return menu;
+}
+
+void call_functions(all_sections& a_s , user_m& u_m) {
+
+    int menu;
+
+    reg_and_log(u_m);
+
+    while (true) {
+
+        menu = menu1();
+        system("cls");
+        switch (menu) {
+        case 1:
+            u_m.read_mark();
+            break;
+        case 2:
+            u_m.write_user_name();
+            a_s.read_file_a();
+            a_s.print();
+            break;
+        }
+
+    }
+
+}
 
 int main() {
     setlocale(LC_ALL, "UKR");
 
+    int menu;
     all_sections a_s;
     user_m u_m;
 
-
-   
-   
+    call_functions(a_s, u_m);
    
     return 0;
 }
